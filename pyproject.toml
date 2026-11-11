@@ -1,7 +1,7 @@
 [project]
 name = "SEJ2025-icesheets"
 version = "0.1.0"
-description = "Add your description here"
+description = "A module within FACTS2 that produces sea-level change projections from 2000-2300 by sampling from the structured-expert judgement ice sheet projections of Kopp et al. (in review)."
 readme = "README.md"
 authors = [
     { name = "Elizabeth H. Davis",
