@@ -4,16 +4,23 @@ version = "0.1.0"
 description = "A module within FACTS2 that produces sea-level change projections from 2000-2300 by sampling from the structured-expert judgement ice sheet projections of Kopp et al. (in review)."
 readme = "README.md"
 authors = [
-    { name = "Elizabeth H. Davis",
-    email = "elizabeth.h.davis@rutgers.edu" }
+    { name = "Elizabeth H. Davis", email = "elizabeth.h.davis@rutgers.edu" }
 ]
 requires-python = ">=3.13"
 dependencies = [
     "click>=8.4.2",
+    "matplotlib>=3.11.2",
+    "netcdf4>=1.7.5.1.post1",
+    "numpy>=2.5.4",
+    "openpyxl>=3.1.5",
+    "pandas>=3.1.1",
+    "pillow>=13.0.0",
+    "scipy>=1.18.1",
+    "xarray>=2026.9.0",
 ]
 
 [project.scripts]
-SEJ2025-icesheets = "2025SEJ-icesheets.cli:main"
+SEJ2025-icesheets = "sej2025_icesheets.cli:main"
 
 [build-system]
 requires = ["uv_build>=0.8.11,<0.9.0"]
