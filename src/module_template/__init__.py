@@ -1,2 +1,2 @@
 def main() -> None:
-    print("Hello from module-template!")
+    print("Hello from 2025SEJ-icesheets!")
