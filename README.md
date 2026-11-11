@@ -1,7 +1,7 @@
-# module-template
-This repository is a starting point for a FACTS2 module. It has everything necessary to run a module in the FACTS2 framework *except* the actual science, which will be added by the module developer. If you are developing a FACTS2 module in Python, we recommend creating a repository for your module based off of this template. 
+# SEJ2025-icesheets
+A module within FACTS2 that produces sea-level change projections from 2000-2300 by sampling from the structured-expert judgement ice sheet projections of Kopp et al. (in review).
 
-This README contains an overview of the different components of this repository as well as instructions for adding and generating elements that will be specific to your module. 
+This module relies on inputs of emissions-projected climate data. For example, you can use the output climate.nc file from the FAIR model container. Additional input data is located in this repository.
 
 ## Requirements of a FACTS2 module
 This section describes attributes of a module in the FACTS2 ecosystem. 
