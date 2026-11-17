@@ -1,6 +1,6 @@
 """FaIR-to-SEJ scenario selection shared by CMIP6 and CMIP7.
 
-Preserves cumulative-warming, two-checkpoint, inverse-distance
+Preserves the adopted cumulative-warming, two-checkpoint, inverse-distance
 sampling method and endpoint truncation. Inputs are warming anomalies in K
 on the same baseline as the reference warming trajectories.
 """
@@ -18,9 +18,10 @@ TRUNCATION_RULE = 'outside_same_direction_at_both_2100_and_2200'
 
 
 def read_fair_gsat(path, family='CMIP6', variable=None, warming_offset=0.0):
-    """Read an annual (samples, years) GSAT dataset, handling CMIP6/7 schemas.
+    """Read upstream FACTS2 FaIR GSAT NetCDF and return (samples, years).
 
-    The input must use the same anomaly baseline as the reference curves.
+    Accepts (samples, years, locations) and selects global location -1.
+    Requires an annual 2000-2300 subset and SEJ-compatible anomaly baseline.
     """
     with xr.open_dataset(path) as ds:
         if variable is None:
@@ -29,6 +30,21 @@ def read_fair_gsat(path, family='CMIP6', variable=None, warming_offset=0.0):
             if len(candidates) != 1:
                 raise ValueError(f'Cannot uniquely identify GSAT variable: {list(ds.data_vars)}')
             variable = candidates[0]
+        centered = ds.attrs.get('Centered', ds.attrs.get('centered'))
+        if isinstance(centered, bytes):
+            centered = centered.decode('utf-8')
+        if centered is not None:
+            baseline = str(centered).lower().replace('–', '-').replace(' ', '')
+            if '1850-1900' not in baseline:
+                raise ValueError(
+                    f'FaIR warming baseline {centered!r} does not match the '
+                    'SEJ reference baseline (1850-1900).'
+                )
+        else:
+            warnings.warn(
+                'FaIR NetCDF has no Centered metadata; independently verify '
+                'that GSAT is relative to 1850-1900.', stacklevel=2
+            )
         da = ds[variable]
         year_dim = next((d for d in ('years','year','time') if d in da.dims), None)
         sample_dim = next((d for d in ('samples','sample','realization','realizations',
