@@ -103,7 +103,7 @@ def interpolate_annual(sampled, annual_hist, boundary, shifts, tension_p=TENSION
 
     historical columns are E_cm, W_cm and G_cm, with calendar_year.
     The SEJ 2100/2200/2300 endpoint columns are in mm (2005 baseline);
-    knots at 2050 and historical observations are in cm (1995–2014 baseline).
+    knots at 2050 and historical observations are in cm.
     """
     n=len(sampled)
     output={}
