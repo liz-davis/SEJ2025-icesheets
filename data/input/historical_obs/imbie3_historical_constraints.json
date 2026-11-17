@@ -1,0 +1,15 @@
+{
+  "description": "Deterministic IMBIE v3 historical constraints for SEJ2025",
+  "reference_period": "1995-2014",
+  "fitting_period": "1979-2022",
+  "historical_output_years": "2000-2023 December observations",
+  "boundary_source": "Quadratic fit to complete four-year means; observed December endpoint rate",
+  "unit": "cm sea-level contribution",
+  "source_sha256": {
+    "imbie3_east_antarctica_mm_partitioned.csv": "b3552330a615e00e71bbe3da0dc9a64282541d1cba5ea0350d5fa7f3b0d223b7",
+    "imbie3_west_antarctica_mm_partitioned.csv": "801eecee2ddbc367917b1f835ff2241720c1eb859df44b1f7c828ddd96739a03",
+    "imbie3_greenland_mm_partitioned.csv": "956e645443fafc20a706504b0dab5f12a80fe8a59830cf54534942b5461c618c"
+  },
+  "output_file": "imbie3_historical_constraints.npz",
+  "output_sha256": "fa2f299b7060c6847c7ee5def9ad3f456cbbacba1b4bf2a6b251ae69309b1984"
+}
