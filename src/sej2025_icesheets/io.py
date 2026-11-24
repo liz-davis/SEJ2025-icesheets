@@ -100,31 +100,27 @@ def read_climate(path: str):
 
 
 # Read and write gmsl projections
-def write_gmsl_projections(projections: xr.Dataset, output_file: str):
-    """
-    Write global mean sea level projections to a NetCDF file.
- 
-    Parameters
-    ----------
-    projections : xarray.Dataset
-        Dataset holding the GMSL projections to serialise.
-    output_file : str
-        Path of the NetCDF file to write. An existing file is overwritten.
- 
-    Returns
-    -------
-    None
- 
-    See Also
-    --------
-    read_gmsl_projections : Read GMSL projections back into memory.
- 
-    Notes
-    -----
-    The dataset is written as-is: no validation is performed and no encoding
-    or compression is applied.
-    """
-    projections.to_netcdf(output_file)
+def write_gmsl_projections(
+    projections: xr.Dataset,
+    output_file: str,
+):
+    """Write GRD-compatible GMSL projections to NetCDF4."""
+
+    encoding = {
+        "sea_level_change": {
+            "dtype": "float64",
+            "zlib": True,
+            "complevel": 4,
+        }
+    }
+
+    projections.to_netcdf(
+        output_file,
+        format="NETCDF4",
+        engine="netcdf4",
+        encoding=encoding,
+    )
+
 
 def read_gmsl_projections(path: str)-> xr.Dataset:
     """
