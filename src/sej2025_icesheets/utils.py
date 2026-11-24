@@ -77,7 +77,7 @@ def make_gmsl_projection_ds(
         "EAIS": ("ais", "EAIS"),
         "WAIS": ("ais", "WAIS"),
         "GIS": ("gris", "ALL"),
-        "AIS": ("his", "AIS"), # Diagnostic only; exclude from GRD to avoid double counting
+        "AIS": ("ais", "AIS"), # Diagnostic only; exclude from GRD to avoid double counting
     }
 
     if ice_source not in component_metadata:
