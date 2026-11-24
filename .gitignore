@@ -180,4 +180,7 @@ cython_debug/
 .cursorignore
 .cursorindexingignore
 
+# macOS system files
+.DS_Store
+
 .history/
