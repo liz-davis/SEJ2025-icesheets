@@ -267,7 +267,8 @@ def write_component_gmsl_projections(
     baseyear: int,
     output_files: dict,
 ):
-    """Write EAIS, WAIS, GIS, and AIS in the Bamber19 global NetCDF layout.
+    """Write GRD-compatible EAIS, WAIS, and GIS GMSL projections. 
+       AIS is supported as an optional diagnostic output only.
 
     ``arrays`` are SEJ annual trajectories in cm, keys E/W/G/AIS.
     ``output_files`` uses component keys EAIS/WAIS/GIS/AIS; a None path skips
