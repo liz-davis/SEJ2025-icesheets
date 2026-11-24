@@ -2,12 +2,14 @@
 Annual SEJ2025 sea-level trajectories using tension spline.
 
 """
+
 from __future__ import annotations
 import numpy as np
 import pandas as pd
 from .config import YEARS, TENSION_P
 
 MM_TO_CM = 0.1
+
 
 class TensionSpline:
     """Classical interpolating spline under tension with continuous first derivative."""
@@ -81,7 +83,9 @@ class TensionSpline:
                 rh = np.sinh(p * u)[:, None] / (p**2 * sh)
                 ll = ((h - u) / h)[:, None]
                 rl = (u / h)[:, None]
-                out[mask] = lh * M0 + rh * M1 + ll * (y0 - M0 / p**2) + rl * (y1 - M1 / p**2)
+                out[mask] = (
+                    lh * M0 + rh * M1 + ll * (y0 - M0 / p**2) + rl * (y1 - M1 / p**2)
+                )
         return out[:, 0] if self.squeeze else out
 
     def value(self, xx):
@@ -91,11 +95,8 @@ class TensionSpline:
         return self._eval(xx, derivative=True)
 
 
-
-
 # Historical fitting is performed offline by scripts/preprocessing/preprocess_imbie.py.
 # Use `load_historical_constraints()` to supply immutable arrays to interpolation.
-from .historical import load_historical_constraints
 
 
 def interpolate_annual(sampled, annual_hist, boundary, shifts, tension_p=TENSION_P):
@@ -105,37 +106,53 @@ def interpolate_annual(sampled, annual_hist, boundary, shifts, tension_p=TENSION
     The SEJ 2100/2200/2300 endpoint columns are in mm (2005 baseline);
     knots at 2050 and historical observations are in cm.
     """
-    n=len(sampled)
-    output={}
-    validations=[]
-    future=YEARS>=2024
-    for v in ('E','W','G'):
-        full=np.full((n,len(YEARS)),np.nan,dtype=np.float32)
+    n = len(sampled)
+    output = {}
+    validations = []
+    future = YEARS >= 2024
+    for v in ("E", "W", "G"):
+        full = np.full((n, len(YEARS)), np.nan, dtype=np.float32)
         for row in annual_hist.itertuples():
-            yr=int(row.calendar_year)
-            if 2000<=yr<=2023:
-                full[:,yr-2000]=np.float32(getattr(row,f'{v}_cm'))
-        x2023,y2023,rate2023=boundary[v]
-        knots={2050:sampled[f'KNOT_{v}_2050_cm'].to_numpy(float)}
-        for year,code in ((2100,'21'),(2200,'22'),(2300,'23')):
-            knots[year]=sampled[f'{v}_{code}'].to_numpy(float)*MM_TO_CM+shifts[v]
-        xx=np.array([x2023,2050.,2100.,2200.,2300.])
-        yy=np.vstack([np.full(n,y2023),*[knots[y] for y in (2050,2100,2200,2300)]])
-        spline=TensionSpline(xx,yy,p=tension_p,left_slope=rate2023)
-        full[:,future]=spline.value(YEARS[future].astype(float)).T.astype(np.float32)
-        for year,want in knots.items():
-            actual=full[:,year-2000].astype(float)
-            diff=np.abs(actual-want)
-            validations.append(dict(component=v,year=year,max_abs_difference_cm=float(diff.max()),
-                                     allclose=bool(np.allclose(actual,want,rtol=1e-6,atol=1e-5))))
-        for yr in (2050,2100,2200):
-            diff=np.abs(spline.rate([yr+1e-5])[0]-spline.rate([yr-1e-5])[0])
-            validations.append(dict(component=v,year=f'rate_{yr}',max_abs_difference_cm=float(diff.max()),
-                                    allclose=bool(diff.max()<1e-3)))
-        output[v]=full
-    output['AIS']=(output['E']+output['W']).astype(np.float32)
-    output['SLR']=(output['AIS']+output['G']).astype(np.float32)
-    validation=pd.DataFrame(validations)
-    if not validation['allclose'].all():
-        raise RuntimeError(f'Failed knot/rate validations: {validation.loc[~validation.allclose].to_string(index=False)}')
-    return output,validation
+            yr = int(row.calendar_year)
+            if 2000 <= yr <= 2023:
+                full[:, yr - 2000] = np.float32(getattr(row, f"{v}_cm"))
+        x2023, y2023, rate2023 = boundary[v]
+        knots = {2050: sampled[f"KNOT_{v}_2050_cm"].to_numpy(float)}
+        for year, code in ((2100, "21"), (2200, "22"), (2300, "23")):
+            knots[year] = sampled[f"{v}_{code}"].to_numpy(float) * MM_TO_CM + shifts[v]
+        xx = np.array([x2023, 2050.0, 2100.0, 2200.0, 2300.0])
+        yy = np.vstack(
+            [np.full(n, y2023), *[knots[y] for y in (2050, 2100, 2200, 2300)]]
+        )
+        spline = TensionSpline(xx, yy, p=tension_p, left_slope=rate2023)
+        full[:, future] = spline.value(YEARS[future].astype(float)).T.astype(np.float32)
+        for year, want in knots.items():
+            actual = full[:, year - 2000].astype(float)
+            diff = np.abs(actual - want)
+            validations.append(
+                dict(
+                    component=v,
+                    year=year,
+                    max_abs_difference_cm=float(diff.max()),
+                    allclose=bool(np.allclose(actual, want, rtol=1e-6, atol=1e-5)),
+                )
+            )
+        for yr in (2050, 2100, 2200):
+            diff = np.abs(spline.rate([yr + 1e-5])[0] - spline.rate([yr - 1e-5])[0])
+            validations.append(
+                dict(
+                    component=v,
+                    year=f"rate_{yr}",
+                    max_abs_difference_cm=float(diff.max()),
+                    allclose=bool(diff.max() < 1e-3),
+                )
+            )
+        output[v] = full
+    output["AIS"] = (output["E"] + output["W"]).astype(np.float32)
+    output["SLR"] = (output["AIS"] + output["G"]).astype(np.float32)
+    validation = pd.DataFrame(validations)
+    if not validation["allclose"].all():
+        raise RuntimeError(
+            f"Failed knot/rate validations: {validation.loc[~validation.allclose].to_string(index=False)}"
+        )
+    return output, validation

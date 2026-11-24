@@ -1,0 +1,12 @@
+# GRD Fingerprint Map: SEJ2025
+# AIS diagnostic excluded to avoid double counting.
+
+ais:
+  EAIS:
+    fingerprint: FPRINT/fprint_eais.nc
+  WAIS:
+    fingerprint: FPRINT/fprint_wais.nc
+
+gris:
+  ALL:
+    fingerprint: FPRINT/fprint_gis.nc

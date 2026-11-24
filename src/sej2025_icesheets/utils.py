@@ -77,7 +77,10 @@ def make_gmsl_projection_ds(
         "EAIS": ("ais", "EAIS"),
         "WAIS": ("ais", "WAIS"),
         "GIS": ("gris", "ALL"),
-        "AIS": ("ais", "AIS"), # Diagnostic only; exclude from GRD to avoid double counting
+        "AIS": (
+            "ais",
+            "AIS",
+        ),  # Diagnostic only; exclude from GRD to avoid double counting
     }
 
     if ice_source not in component_metadata:
@@ -88,10 +91,8 @@ def make_gmsl_projection_ds(
     # Rebase to the requested year and convert cm to mm.
     # Preserve float64 precision for the GRD interface.
     values = values.astype(np.float64)
- 
-    change_mm = (
-        values - values[:, base_index[0], None]
-    ) * 10.0
+
+    change_mm = (values - values[:, base_index[0], None]) * 10.0
 
     ds = xr.Dataset(
         data_vars={
