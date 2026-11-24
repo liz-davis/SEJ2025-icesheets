@@ -33,7 +33,7 @@ jobs:
 
       - name: Format check with ruff
         run: |
-          uv run ruff format . --diff
+          uv run ruff format . --check
 
       - name: Lint check with ruff
         run: |
