@@ -45,8 +45,8 @@ def make_gmsl_projection_ds(
     Returns
     -------
     xr.Dataset
-        One variable ``sea_level_change`` in mm and dimensions
-        (samples, years, locations), with singleton global location [-1].
+        One variable ``sea_level_change`` in mm with dimensions
+        (sample, year, budget_term, source_region).
     """
     values = np.asarray(global_samps)
     years = np.asarray(years)
@@ -73,23 +73,24 @@ def make_gmsl_projection_ds(
     if len(np.unique(sample_ids)) != nsamps:
         raise ValueError("Sample identifiers must be unique")
 
-        source_regions = {
-        "EAIS": "eais",
-        "WAIS": "wais",
-        "GIS": "gis",
-        "AIS": "ais",
+    component_metadata = {
+        "EAIS": ("ais", "EAIS"),
+        "WAIS": ("ais", "WAIS"),
+        "GIS": ("gris", "ALL"),
+        "AIS": ("his", "AIS"), # Diagnostic only; exclude from GRD to avoid double counting
     }
 
-    if ice_source not in source_regions:
+    if ice_source not in component_metadata:
         raise ValueError(f"Unknown ice-sheet source: {ice_source}")
 
-    source_region = source_regions[ice_source]
+    budget_term, source_region = component_metadata[ice_source]
 
     # Rebase to the requested year and convert cm to mm.
     # Preserve float64 precision for the GRD interface.
+    values = values.astype(np.float64)
+ 
     change_mm = (
-        values.astype(np.float64)
-        - values[:, base_index[0], None]
+        values - values[:, base_index[0], None]
     ) * 10.0
 
     ds = xr.Dataset(
@@ -103,7 +104,7 @@ def make_gmsl_projection_ds(
         coords={
             "sample": sample_ids,
             "year": years.astype(np.int32),
-            "budget_term": ["icesheets"],
+            "budget_term": [budget_term],
             "source_region": [source_region],
         },
         attrs={
