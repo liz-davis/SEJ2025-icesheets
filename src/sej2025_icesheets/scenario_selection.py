@@ -6,18 +6,21 @@ on the same baseline as the reference warming trajectories.
 """
 
 from __future__ import annotations
+
 import json
 import warnings
+
 import numpy as np
 import pandas as pd
 import xarray as xr
+
 from .config import (
-    YEARS,
-    SCENARIOS,
-    REFERENCE_YEARS,
-    REFERENCE_WARMING,
     CHECKPOINTS,
+    REFERENCE_WARMING,
+    REFERENCE_YEARS,
+    SCENARIOS,
     SELECTION_SEED,
+    YEARS,
 )
 
 METHOD = "range_normalized_checkpoint_euclidean_idw_p1_double_checkpoint_truncation"

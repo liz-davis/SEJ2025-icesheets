@@ -14,9 +14,10 @@ validates the structure of the dataset and applies per-variable compression;
 the GMSL and RSL writers pass the dataset through unmodified.
 """
 
+from typing import Literal
+
 import numpy as np
 import xarray as xr
-from typing import Literal
 
 ## The following functions handle IO for projections generated at different steps of a FACTS experiment
 
@@ -289,6 +290,7 @@ def write_component_gmsl_projections(
     modify the input arrays or the combined annual scientific file.
     """
     from pathlib import Path
+
     from .utils import make_gmsl_projection_ds
 
     source_key = {"EAIS": "E", "WAIS": "W", "GIS": "G", "AIS": "AIS"}

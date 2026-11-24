@@ -4,9 +4,11 @@ Annual SEJ2025 sea-level trajectories using tension spline.
 """
 
 from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-from .config import YEARS, TENSION_P
+
+from .config import TENSION_P, YEARS
 
 MM_TO_CM = 0.1
 
@@ -130,22 +132,22 @@ def interpolate_annual(sampled, annual_hist, boundary, shifts, tension_p=TENSION
             actual = full[:, year - 2000].astype(float)
             diff = np.abs(actual - want)
             validations.append(
-                dict(
-                    component=v,
-                    year=year,
-                    max_abs_difference_cm=float(diff.max()),
-                    allclose=bool(np.allclose(actual, want, rtol=1e-6, atol=1e-5)),
-                )
+                {
+                    "component": v,
+                    "year": year,
+                    "max_abs_difference_cm": float(diff.max()),
+                    "allclose": bool(np.allclose(actual, want, rtol=1e-6, atol=1e-5)),
+                }
             )
         for yr in (2050, 2100, 2200):
             diff = np.abs(spline.rate([yr + 1e-5])[0] - spline.rate([yr - 1e-5])[0])
             validations.append(
-                dict(
-                    component=v,
-                    year=f"rate_{yr}",
-                    max_abs_difference_cm=float(diff.max()),
-                    allclose=bool(diff.max() < 1e-3),
-                )
+                {
+                    "component": v,
+                    "year": f"rate_{yr}",
+                    "max_abs_difference_cm": float(diff.max()),
+                    "allclose": bool(diff.max() < 1e-3),
+                }
             )
         output[v] = full
     output["AIS"] = (output["E"] + output["W"]).astype(np.float32)

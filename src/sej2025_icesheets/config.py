@@ -4,6 +4,7 @@ No paths are created on import. All source files are supplied at runtime.
 """
 
 from pathlib import Path
+
 import numpy as np
 
 YEARS = np.arange(2000, 2301)

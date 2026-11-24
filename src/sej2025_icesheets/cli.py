@@ -6,13 +6,15 @@ experiment configuration and spatial fingerprint interface.
 
 import argparse
 from pathlib import Path
+
 import pandas as pd
-from .scenario_selection import read_fair_gsat, select_scenarios
-from .sampling import sample_coupled_rows
-from .interpolation import interpolate_annual
-from .historical import load_historical_constraints
+
 from .config import YEARS
+from .historical import load_historical_constraints
+from .interpolation import interpolate_annual
 from .io import write_annual_ice_sheet_projections, write_component_gmsl_projections
+from .sampling import sample_coupled_rows
+from .scenario_selection import read_fair_gsat, select_scenarios
 
 
 # Build out your modules CLI entrypoint here

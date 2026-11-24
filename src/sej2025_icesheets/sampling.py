@@ -1,9 +1,11 @@
 """Draw coupled 2050/2100/2200/2300 ice-sheet endpoints from a fixed CSV."""
 
 from __future__ import annotations
+
 import numpy as np
 import pandas as pd
-from .config import SCENARIOS, SCENARIO_CODES, CMIP6_SAMPLE_SEED, CMIP7_CRN_SEED
+
+from .config import CMIP6_SAMPLE_SEED, CMIP7_CRN_SEED, SCENARIO_CODES, SCENARIOS
 
 
 def crn_indices_by_sample_id(selection, n_rows, seed=CMIP7_CRN_SEED):
