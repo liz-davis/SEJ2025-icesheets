@@ -73,30 +73,48 @@ def make_gmsl_projection_ds(
     if len(np.unique(sample_ids)) != nsamps:
         raise ValueError("Sample identifiers must be unique")
 
-    # Difference before conversion retains precision in the original cm data.
-    # Working in float64 avoids excessive cancellation near the base year.
-    change_mm = ((values.astype(np.float64) - values[:, base_index[0], None]) * 10.0).astype(np.float32)
+        source_regions = {
+        "EAIS": "eais",
+        "WAIS": "wais",
+        "GIS": "gis",
+        "AIS": "ais",
+    }
+
+    if ice_source not in source_regions:
+        raise ValueError(f"Unknown ice-sheet source: {ice_source}")
+
+    source_region = source_regions[ice_source]
+
+    # Rebase to the requested year and convert cm to mm.
+    # Preserve float64 precision for the GRD interface.
+    change_mm = (
+        values.astype(np.float64)
+        - values[:, base_index[0], None]
+    ) * 10.0
+
     ds = xr.Dataset(
         data_vars={
             "sea_level_change": (
-                ("samples", "years", "locations"),
-                change_mm[:, :, np.newaxis],
+                ("sample", "year", "budget_term", "source_region"),
+                change_mm[:, :, None, None],
                 {"units": "mm"},
             ),
-            "lat": (("locations",), np.array([np.inf], dtype=np.float32)),
-            "lon": (("locations",), np.array([np.inf], dtype=np.float32)),
         },
         coords={
-            "samples": sample_ids,
-            "years": years.astype(np.int32),
-            "locations": np.array([-1], dtype=np.int64),
+            "sample": sample_ids,
+            "year": years.astype(np.int32),
+            "budget_term": ["icesheets"],
+            "source_region": [source_region],
         },
         attrs={
-            "description": f"Global SLR contribution from {ice_source or module_name} ({module_name} module)",
+            "Conventions": "CF-1.8",
+            "title": "SEJ2025 Ice-Sheet GMSL Projections",
+            "source": module_name,
             "history": "Created " + time.ctime(),
             "scenario": scenario,
             "baseyear": int(baseyear),
             "input_reference_period": input_reference_period,
         },
     )
+
     return ds
