@@ -26,18 +26,18 @@ def main():
     parser.add_argument('--baseyear', type=int, default=2005,
                         help='Reference year for component GMSL outputs (default: 2005).')
     for component in ('EAIS', 'WAIS', 'GIS', 'AIS'):
-    parser.add_argument(
-        f'--output-{component}-gslr-file',
-        type=Path,
-        help=(
-            f'Output path for {component} global NetCDF projections. '
-            + (
-                'Aggregate diagnostic; do not pass to grd-fingerprinting.'
-                if component == 'AIS'
-                else 'Compatible with grd-fingerprinting.'
-            )
-        ),
-    )
+        parser.add_argument(
+            f'--output-{component}-gslr-file',
+            type=Path,
+            help=(
+                f'Output path for {component} global NetCDF projections. '
+                + (
+                    'Aggregate diagnostic; do not pass to grd-fingerprinting.'
+                    if component == 'AIS'
+                    else 'Compatible with grd-fingerprinting.'
+                )
+            ),
+        )
     args=parser.parse_args()
     temperature,ids=read_fair_gsat(args.gsat,family=args.family)
     selection=select_scenarios(temperature,ids,pathway=args.pathway)
