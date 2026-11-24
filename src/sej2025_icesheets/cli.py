@@ -58,7 +58,7 @@ def main():
         output_file=args.out / 'annual_ice_sheet_trajectories_2000_2300.nc',
     )
     gmsl_outputs = {
-        component: getattr(args, f'output_{component.lower()}_gslr_file')
+        component: getattr(args, f'output_{component}_gslr_file')
         for component in ('EAIS', 'WAIS', 'GIS', 'AIS')
     }
     if any(path is not None for path in gmsl_outputs.values()):
